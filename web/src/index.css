@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --navy: #0F172A;
+  --navy2: #1E293B;
+  --amber: #F59E0B;
+  --amber-l: #FEF3C7;
+  --amber-d: #92400E;
+  --green: #16A34A;
+  --green-l: #DCFCE7;
+  --green-d: #166534;
+  --blue: #3B82F6;
+  --blue-l: #DBEAFE;
+  --blue-d: #1D4ED8;
+  --red: #DC2626;
+  --red-l: #FEE2E2;
+  --border: #E2E8F0;
+  --border2: #F1F5F9;
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --text: #0F172A;
+  --text2: #334155;
+  --text3: #64748B;
+  --text4: #94A3B8;
+  --text5: #CBD5E1;
+  --mono: 'DM Mono', monospace;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text5); }

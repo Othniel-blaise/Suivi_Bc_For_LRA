@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATRON
+  RECEPTIONNISTE
+}
+
+enum StatutBC {
+  TRANSMIS
+  LIVRE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  nom       String
+  role      Role     @default(RECEPTIONNISTE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bcsCreated   BonCommande[] @relation("CreatedBy")
+  bcsReception BonCommande[] @relation("ReceptionBy")
+}
+
+model BonCommande {
+  id               String    @id @default(cuid())
+  numero           String    @unique
+  fournisseur      String
+  imputation       String
+  statut           StatutBC  @default(TRANSMIS)
+  dateTransmission DateTime  @default(now())
+  dateReception    DateTime?
+  articlesRecus    String?   @db.Text
+  lieuReception    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  createdBy        User      @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById      String
+  receptionniste   User?     @relation("ReceptionBy", fields: [receptionnisteId], references: [id])
+  receptionnisteId String?
+}

@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Suivi BC",
+    "slug": "suivi-bc",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "orientation": "portrait",
+    "scheme": "suivi-bc",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Accès photos pour joindre le bon de livraison",
+          "cameraPermission": "Accès caméra pour photographier le bon de livraison"
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.larouteafricaine.suivibc",
+      "adaptiveIcon": {
+        "backgroundColor": "#0F172A"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.larouteafricaine.suivibc"
+    }
+  }
+}

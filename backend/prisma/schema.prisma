@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -38,7 +38,7 @@ model BonCommande {
   statut           StatutBC  @default(TRANSMIS)
   dateTransmission DateTime  @default(now())
   dateReception    DateTime?
-  articlesRecus    String?   @db.Text
+  articlesRecus    String?
   lieuReception    String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt

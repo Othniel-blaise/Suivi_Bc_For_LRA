@@ -15,15 +15,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const fastify = Fastify({ logger: true });
 
 // Plugins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:19000',
+  'http://localhost:19001',
+  'http://localhost:19006',
+  /^http:\/\/192\.168\./,
+  /^exp:\/\//,
+];
+
+// Ajouter l'URL Vercel (ou autre frontend) définie dans les variables d'env
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 await fastify.register(fastifyCors, {
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:19000',
-    'http://localhost:19001',
-    'http://localhost:19006',
-    /^http:\/\/192\.168\./,   // réseau local Expo
-    /^exp:\/\//,
-  ],
+  origin: allowedOrigins,
   credentials: true,
 });
 

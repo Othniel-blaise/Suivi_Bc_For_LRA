@@ -62,7 +62,7 @@ ipconfig
 ### Modifier l'URL dans mobile/src/api/client.js
 ```js
 const BASE_URL = __DEV__
-  ? 'http://192.168.1.183:3001/api'   // ← Votre IP ici
+  ? 'http://192.168.180.112:3001/api'   // ← Votre IP ici
   : ...
 ```
 

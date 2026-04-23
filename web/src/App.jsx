@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/auth.js';
 import LoginPage from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Statistiques from './pages/Statistiques.jsx';
 
 function PrivateRoute({ children }) {
   const { token } = useAuthStore();
@@ -17,6 +18,14 @@ export default function App() {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/stats"
+        element={
+          <PrivateRoute>
+            <Statistiques />
           </PrivateRoute>
         }
       />

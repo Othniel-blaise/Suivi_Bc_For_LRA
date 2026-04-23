@@ -32,6 +32,8 @@ if (process.env.FRONTEND_URL) {
 await fastify.register(fastifyCors, {
   origin: allowedOrigins,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
 await fastify.register(fastifyJwt, {

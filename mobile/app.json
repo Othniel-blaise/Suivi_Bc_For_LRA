@@ -22,10 +22,22 @@
       "package": "com.larouteafricaine.suivibc",
       "adaptiveIcon": {
         "backgroundColor": "#0F172A"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
-      "bundleIdentifier": "com.larouteafricaine.suivibc"
+      "bundleIdentifier": "com.larouteafricaine.suivibc",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5ef5662c-ff2d-43dc-be75-d917b6aecdc0"
+      }
     }
   }
 }

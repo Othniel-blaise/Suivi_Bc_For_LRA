@@ -103,6 +103,71 @@ export default async function bonsCommandeRoutes(fastify) {
     return reply.send(updated);
   });
 
+  // POST /api/bons-commande/import — import en lot (PATRON uniquement)
+  fastify.post('/import', {
+    preHandler: [authenticate, requireRole('PATRON')],
+  }, async (request, reply) => {
+    const items = request.body;
+    if (!Array.isArray(items) || items.length === 0) {
+      return reply.status(400).send({ error: 'Liste vide ou format invalide' });
+    }
+    if (items.length > 500) {
+      return reply.status(400).send({ error: 'Maximum 500 lignes par import' });
+    }
+
+    const resultats = [];
+    for (const item of items) {
+      const result = createBCSchema.safeParse(item);
+      if (!result.success) {
+        resultats.push({ numero: item.numero || '?', statut: 'erreur', message: result.error.errors[0].message });
+        continue;
+      }
+      const { numero, fournisseur, imputation } = result.data;
+      const existing = await fastify.prisma.bonCommande.findUnique({ where: { numero } });
+      if (existing) {
+        resultats.push({ numero, statut: 'doublon', message: 'Numéro déjà existant' });
+        continue;
+      }
+      await fastify.prisma.bonCommande.create({
+        data: { numero, fournisseur, imputation, createdById: request.currentUser.id },
+      });
+      resultats.push({ numero, statut: 'ok', message: 'Créé' });
+    }
+
+    const crees = resultats.filter((r) => r.statut === 'ok').length;
+    const doublons = resultats.filter((r) => r.statut === 'doublon').length;
+    const erreurs = resultats.filter((r) => r.statut === 'erreur').length;
+    return reply.status(201).send({ crees, doublons, erreurs, resultats });
+  });
+
+  // GET /api/bons-commande/stats/par-lieu — stats par lieu (PATRON uniquement)
+  fastify.get('/stats/par-lieu', {
+    preHandler: [authenticate, requireRole('PATRON')],
+  }, async (_request, reply) => {
+    const tous = await fastify.prisma.bonCommande.findMany({
+      select: { lieuReception: true, statut: true },
+    });
+
+    const groupes = {};
+    for (const bc of tous) {
+      const lieu = bc.lieuReception?.trim() || 'Non défini';
+      if (!groupes[lieu]) groupes[lieu] = { lieu, livres: 0, enAttente: 0, total: 0 };
+      groupes[lieu].total++;
+      if (bc.statut === 'LIVRE') groupes[lieu].livres++;
+      else groupes[lieu].enAttente++;
+    }
+
+    const resultat = Object.values(groupes)
+      .sort((a, b) => {
+        if (a.lieu === 'Non défini') return 1;
+        if (b.lieu === 'Non défini') return -1;
+        return b.total - a.total;
+      })
+      .map((g) => ({ ...g, tauxLivraison: g.total > 0 ? Math.round((g.livres / g.total) * 100) : 0 }));
+
+    return reply.send({ parLieu: resultat });
+  });
+
   // DELETE /api/bons-commande/:id — supprimer un BC (PATRON uniquement)
   fastify.delete('/:id', {
     preHandler: [authenticate, requireRole('PATRON')],

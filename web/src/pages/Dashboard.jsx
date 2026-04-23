@@ -1,15 +1,18 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.js';
 import { useBonsCommande, useDeleteBC } from '../hooks/useBonsCommande.js';
 import StatCard from '../components/StatCard.jsx';
 import BCRow from '../components/BCRow.jsx';
 import ModalNouveauBC from '../components/ModalNouveauBC.jsx';
+import ModalImportBC from '../components/ModalImportBC.jsx';
 
 export default function Dashboard() {
   const { user, logout } = useAuthStore();
   const { data: bcs = [], isLoading, error } = useBonsCommande();
   const deleteBC = useDeleteBC();
   const [showModal, setShowModal] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const total = bcs.length;
@@ -48,6 +51,41 @@ export default function Dashboard() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 9, alignItems: 'center' }}>
+          {user?.role === 'PATRON' && (
+            <Link to="/stats" style={{ textDecoration: 'none' }}>
+              <button
+                style={{
+                  background: 'var(--navy2)',
+                  color: '#94a3b8',
+                  border: '1px solid #334155',
+                  padding: '8px 14px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                📍 Stats par lieu
+              </button>
+            </Link>
+          )}
+          {user?.role === 'PATRON' && (
+            <button
+              onClick={() => setShowImport(true)}
+              style={{
+                background: 'var(--navy2)',
+                color: '#94a3b8',
+                border: '1px solid #334155',
+                padding: '8px 14px',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              📥 Importer Excel
+            </button>
+          )}
           <button
             onClick={() => setShowModal(true)}
             style={{
@@ -149,8 +187,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Modal nouveau BC */}
       <ModalNouveauBC open={showModal} onClose={() => setShowModal(false)} />
+      <ModalImportBC open={showImport} onClose={() => setShowImport(false)} />
 
       {/* Modal confirmation suppression */}
       {deleteConfirm && (

@@ -194,9 +194,9 @@ export default function LoginPage() {
             color: 'var(--text4)',
           }}
         >
-          Connexion patron :{' '}
+           Blaise_Système :{' '}
           <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, color: 'var(--text3)' }}>
-            patron / admin123
+            Version 1.0.0 (gratuite )
           </span>
         </div>
       </div>

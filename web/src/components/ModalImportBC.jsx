@@ -206,7 +206,7 @@ export default function ModalImportBC({ open, onClose }) {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead style={{ position: 'sticky', top: 0, background: 'var(--bg)' }}>
                 <tr>
-                  {['#', 'N° du BC', 'Fournisseur', 'Imputation'].map((h) => (
+                  {['#', 'Numéro', 'Nom du fournisseur', 'Imputation par défaut'].map((h) => (
                     <th key={h} style={{
                       padding: '8px 12px', textAlign: 'left', fontSize: 11,
                       fontWeight: 700, color: 'var(--text4)',

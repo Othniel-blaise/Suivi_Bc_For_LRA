@@ -65,9 +65,9 @@ export default async function bonsCommandeRoutes(fastify) {
     return reply.status(201).send(bc);
   });
 
-  // PATCH /api/bons-commande/:id/reception — confirmer réception (RECEPTIONNISTE)
+  // PATCH /api/bons-commande/:id/reception — confirmer réception (RECEPTIONNISTE ou PATRON)
   fastify.patch('/:id/reception', {
-    preHandler: [authenticate, requireRole('RECEPTIONNISTE')],
+    preHandler: [authenticate, requireRole('RECEPTIONNISTE', 'PATRON')],
   }, async (request, reply) => {
     const bc = await fastify.prisma.bonCommande.findUnique({
       where: { id: request.params.id },

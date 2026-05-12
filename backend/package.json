@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch src src/app.js",
-    "start": "prisma migrate deploy && node src/app.js",
+    "start": "sh -c 'prisma migrate resolve --rolled-back 20260509000000_add_workflow_champs; prisma migrate deploy && node src/app.js'",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio",

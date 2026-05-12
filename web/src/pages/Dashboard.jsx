@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import { useAuthStore } from '../store/auth.js';
 import { useBonsCommande, useDeleteBC } from '../hooks/useBonsCommande.js';
 import StatCard from '../components/StatCard.jsx';
@@ -46,6 +47,23 @@ export default function Dashboard() {
     setFiltreStatut('');
   }
 
+  function exportExcel() {
+    const rows = filtered.map((bc) => ({
+      'N° BC': bc.numero,
+      'Fournisseur': bc.fournisseur,
+      'Imputation': bc.imputation || '',
+      'Lieu de réception': bc.lieuReception || '',
+      'Montant (FCFA)': bc.montant ?? '',
+      'Statut': bc.statut === 'LIVRE' ? 'Livré' : 'En attente',
+      'Date création': bc.createdAt ? new Date(bc.createdAt).toLocaleDateString('fr-FR') : '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Bons de commande');
+    const suffix = hasFilters ? '_filtres' : '';
+    XLSX.writeFile(wb, `bons_commande${suffix}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  }
+
   function handleDelete(bc) { setDeleteConfirm(bc); }
   function confirmDelete() {
     if (!deleteConfirm) return;
@@ -89,6 +107,11 @@ export default function Dashboard() {
               borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
             }}>📥 Importer Excel</button>
           )}
+          <button onClick={exportExcel} style={{
+            background: 'var(--navy2)', color: '#4ade80',
+            border: '1px solid #334155', padding: '8px 14px',
+            borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+          }}>📤 Exporter Excel</button>
           <button onClick={() => setShowModal(true)} style={{
             background: 'var(--amber)', color: 'white', border: 'none',
             padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700,

@@ -107,6 +107,8 @@ export default function DetailScreen() {
           <Text style={styles.sectionTitle}>Suivi</Text>
           <Timeline
             dateTransmission={bc.dateTransmission}
+            dateReceptionBase={bc.dateReceptionBase}
+            dateLivraison={bc.dateLivraison}
             dateReception={bc.dateReception}
             statut={bc.statut}
           />

@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   // 📊 Stats dérivées de filtered (réactives aux filtres)
   const total = filtered.length;
-  const enAttente = filtered.filter((b) => b.statut === 'TRANSMIS').length;
+  const enCours = filtered.filter((b) => b.statut !== 'LIVRE').length;
   const livres = filtered.filter((b) => b.statut === 'LIVRE').length;
 
   function resetFiltres() {
@@ -128,7 +128,7 @@ export default function Dashboard() {
         {/* Stats — réactives aux filtres */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
           <StatCard label={hasFilters ? 'Résultats' : 'Total BC'} value={total} />
-          <StatCard label="En attente" value={enAttente} color="amber" />
+          <StatCard label="En cours" value={enCours} color="amber" />
           <StatCard label="Livrés" value={livres} color="green" />
         </div>
 
@@ -186,12 +186,16 @@ export default function Dashboard() {
             </span>
 
             {[
-              { label: 'Tous', value: '' },
-              { label: '⏳ En attente', value: 'TRANSMIS' },
-              { label: '✅ Livré', value: 'LIVRE' },
+              { label: 'Tous',           value: '' },
+              { label: '📤 Transmis',    value: 'TRANSMIS' },
+              { label: '🏠 Reçu base',   value: 'RECU_BASE' },
+              { label: '🚚 En livraison', value: 'EN_LIVRAISON' },
+              { label: '✅ Livré',        value: 'LIVRE' },
             ].map((opt) => {
               const isActive = filtreStatut === opt.value;
               const bgActive = opt.value === 'LIVRE' ? '#22c55e'
+                : opt.value === 'RECU_BASE' ? '#3B82F6'
+                : opt.value === 'EN_LIVRAISON' ? '#7C3AED'
                 : opt.value === 'TRANSMIS' ? 'var(--amber)'
                 : '#f1f5f9';
               return (

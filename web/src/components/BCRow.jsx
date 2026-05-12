@@ -56,6 +56,8 @@ export default function BCRow({ bc, index, total, onDelete }) {
         <div style={{ flexShrink: 0 }}>
           <TimelineMini
             dateTransmission={bc.dateTransmission}
+            dateReceptionBase={bc.dateReceptionBase}
+            dateLivraison={bc.dateLivraison}
             dateReception={bc.dateReception}
             statut={bc.statut}
           />

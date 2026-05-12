@@ -6,40 +6,44 @@ function fmtDate(dateStr) {
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-export default function Timeline({ dateTransmission, dateReception, statut }) {
-  const isLivre = statut === 'LIVRE';
+const STEPS = [
+  { key: 'TRANSMIS',     label: 'Transmis',      circleColor: '#DBEAFE', textColor: '#1D4ED8' },
+  { key: 'RECU_BASE',    label: 'Reçu base',      circleColor: '#DBEAFE', textColor: '#1D4ED8' },
+  { key: 'EN_LIVRAISON', label: 'En livraison',   circleColor: '#EDE9FE', textColor: '#6D28D9' },
+  { key: 'LIVRE',        label: 'Livré',           circleColor: '#DCFCE7', textColor: '#15803D' },
+];
+const ORDER = STEPS.map((s) => s.key);
+
+export default function Timeline({ dateTransmission, dateReceptionBase, dateLivraison, dateReception, statut }) {
+  const currentIdx = ORDER.indexOf(statut);
+  const dates = [dateTransmission, dateReceptionBase, dateLivraison, dateReception];
+
   return (
     <View>
-      {/* Étape 1 */}
-      <View style={styles.step}>
-        <View style={styles.stepLeft}>
-          <View style={[styles.circle, styles.circleActive]}>
-            <Text style={[styles.circleText, styles.circleTextActive]}>1</Text>
+      {STEPS.map((step, i) => {
+        const done = i <= currentIdx;
+        const isLast = i === STEPS.length - 1;
+        return (
+          <View key={step.key} style={[styles.step, isLast && { marginBottom: 0 }]}>
+            <View style={styles.stepLeft}>
+              <View style={[styles.circle, done ? { backgroundColor: step.circleColor } : styles.circleInactive]}>
+                <Text style={[styles.circleText, done ? { color: step.textColor } : styles.circleTextInactive]}>
+                  {i + 1}
+                </Text>
+              </View>
+              {!isLast && (
+                <View style={[styles.line, done && i < currentIdx ? styles.lineActive : styles.lineInactive]} />
+              )}
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={[styles.stepTitle, !done && styles.stepTitleInactive]}>{step.label}</Text>
+              <Text style={[styles.stepDate, !done && styles.stepDateInactive]}>
+                {done && dates[i] ? fmtDate(dates[i]) : !done ? 'En attente' : ''}
+              </Text>
+            </View>
           </View>
-          <View style={[styles.line, isLivre ? styles.lineActive : styles.lineInactive]} />
-        </View>
-        <View style={styles.stepContent}>
-          <Text style={styles.stepTitle}>Transmis au fournisseur</Text>
-          <Text style={styles.stepDate}>{fmtDate(dateTransmission)}</Text>
-        </View>
-      </View>
-
-      {/* Étape 2 */}
-      <View style={[styles.step, { marginBottom: 0 }]}>
-        <View style={styles.stepLeft}>
-          <View style={[styles.circle, isLivre ? styles.circleActiveLivre : styles.circleInactive]}>
-            <Text style={[styles.circleText, isLivre ? styles.circleTextLivre : styles.circleTextInactive]}>
-              2
-            </Text>
-          </View>
-        </View>
-        <View style={styles.stepContent}>
-          <Text style={[styles.stepTitle, !isLivre && styles.stepTitleInactive]}>Réceptionné</Text>
-          <Text style={[styles.stepDate, !isLivre && styles.stepDateInactive]}>
-            {isLivre ? fmtDate(dateReception) : 'En attente de livraison'}
-          </Text>
-        </View>
-      </View>
+        );
+      })}
     </View>
   );
 }

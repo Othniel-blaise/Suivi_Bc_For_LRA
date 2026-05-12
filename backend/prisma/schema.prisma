@@ -14,7 +14,14 @@ enum Role {
 
 enum StatutBC {
   TRANSMIS
+  RECU_BASE
+  EN_LIVRAISON
   LIVRE
+}
+
+enum TypeReception {
+  TOTAL
+  PARTIEL
 }
 
 model User {
@@ -40,6 +47,24 @@ model BonCommande {
   dateReception    DateTime?
   articlesRecus    String?
   lieuReception    String?
+  // Étape 2 — Réception base
+  dateReceptionBase   DateTime?
+  lieuBase            String?
+  typeReceptionBase   TypeReception?
+  observationsBase    String?
+
+  // Étape 3 — Mise en livraison
+  agentLivreur        String?
+  lieuDestination     String?
+  dateLivraison       DateTime?
+
+  // Étape 4 — Livraison finale
+  typeReceptionFinale TypeReception?
+  observationsFinales String?
+
+  // Numéro de Demande d'Achat
+  numeroDA            String?
+
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 

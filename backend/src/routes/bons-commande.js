@@ -12,6 +12,28 @@ const receptionSchema = z.object({
   lieuReception: z.string().min(1, 'Le lieu de réception est obligatoire'),
 });
 
+const receptionBaseSchema = z.object({
+  typeReception: z.enum(['TOTAL', 'PARTIEL'], { required_error: 'typeReception requis (TOTAL ou PARTIEL)' }),
+  observations: z.string().optional(),
+  lieuBase: z.string().min(1, 'Le lieu de base est obligatoire'),
+});
+
+const miseEnLivraisonSchema = z.object({
+  agentLivreur: z.string().min(1, "L'agent livreur est obligatoire"),
+  lieuDestination: z.string().min(1, 'Le lieu de destination est obligatoire'),
+});
+
+const livraisonFinaleSchema = z.object({
+  typeReception: z.enum(['TOTAL', 'PARTIEL'], { required_error: 'typeReception requis (TOTAL ou PARTIEL)' }),
+  observations: z.string().optional(),
+  lieuReception: z.string().min(1, 'Le lieu de réception est obligatoire'),
+});
+
+const bcInclude = {
+  createdBy: { select: { id: true, nom: true, username: true } },
+  receptionniste: { select: { id: true, nom: true } },
+};
+
 export default async function bonsCommandeRoutes(fastify) {
   // GET /api/bons-commande — liste tous les BC
   fastify.get('/', { preHandler: authenticate }, async (_request, reply) => {
@@ -166,6 +188,92 @@ export default async function bonsCommandeRoutes(fastify) {
       .map((g) => ({ ...g, tauxLivraison: g.total > 0 ? Math.round((g.livres / g.total) * 100) : 0 }));
 
     return reply.send({ parLieu: resultat });
+  });
+
+  // PATCH /api/bons-commande/:id/reception-base — étape 2 : réception à la base (RECEPTIONNISTE ou PATRON)
+  fastify.patch('/:id/reception-base', {
+    preHandler: [authenticate, requireRole('RECEPTIONNISTE', 'PATRON')],
+  }, async (request, reply) => {
+    const bc = await fastify.prisma.bonCommande.findUnique({ where: { id: request.params.id } });
+    if (!bc) return reply.status(404).send({ error: 'Bon de commande introuvable' });
+    if (bc.statut !== 'TRANSMIS') return reply.status(400).send({ error: 'Action non autorisée pour ce statut' });
+
+    const result = receptionBaseSchema.safeParse(request.body);
+    if (!result.success) return reply.status(400).send({ error: result.error.errors[0].message });
+
+    const { typeReception, observations, lieuBase } = result.data;
+
+    const updated = await fastify.prisma.bonCommande.update({
+      where: { id: request.params.id },
+      data: {
+        statut: 'RECU_BASE',
+        dateReceptionBase: new Date(),
+        lieuBase,
+        typeReceptionBase: typeReception,
+        observationsBase: observations ?? null,
+        receptionnisteId: request.currentUser.id,
+      },
+      include: bcInclude,
+    });
+
+    return reply.send(updated);
+  });
+
+  // PATCH /api/bons-commande/:id/mise-en-livraison — étape 3 : départ vers chantier (RECEPTIONNISTE ou PATRON)
+  fastify.patch('/:id/mise-en-livraison', {
+    preHandler: [authenticate, requireRole('RECEPTIONNISTE', 'PATRON')],
+  }, async (request, reply) => {
+    const bc = await fastify.prisma.bonCommande.findUnique({ where: { id: request.params.id } });
+    if (!bc) return reply.status(404).send({ error: 'Bon de commande introuvable' });
+    if (bc.statut !== 'RECU_BASE') return reply.status(400).send({ error: 'Action non autorisée pour ce statut' });
+
+    const result = miseEnLivraisonSchema.safeParse(request.body);
+    if (!result.success) return reply.status(400).send({ error: result.error.errors[0].message });
+
+    const { agentLivreur, lieuDestination } = result.data;
+
+    const updated = await fastify.prisma.bonCommande.update({
+      where: { id: request.params.id },
+      data: {
+        statut: 'EN_LIVRAISON',
+        dateLivraison: new Date(),
+        agentLivreur,
+        lieuDestination,
+      },
+      include: bcInclude,
+    });
+
+    return reply.send(updated);
+  });
+
+  // PATCH /api/bons-commande/:id/livraison-finale — étape 4 : réception au chantier (RECEPTIONNISTE ou PATRON)
+  fastify.patch('/:id/livraison-finale', {
+    preHandler: [authenticate, requireRole('RECEPTIONNISTE', 'PATRON')],
+  }, async (request, reply) => {
+    const bc = await fastify.prisma.bonCommande.findUnique({ where: { id: request.params.id } });
+    if (!bc) return reply.status(404).send({ error: 'Bon de commande introuvable' });
+    if (bc.statut !== 'EN_LIVRAISON') return reply.status(400).send({ error: 'Action non autorisée pour ce statut' });
+
+    const result = livraisonFinaleSchema.safeParse(request.body);
+    if (!result.success) return reply.status(400).send({ error: result.error.errors[0].message });
+
+    const { typeReception, observations, lieuReception } = result.data;
+
+    const updated = await fastify.prisma.bonCommande.update({
+      where: { id: request.params.id },
+      data: {
+        statut: 'LIVRE',
+        dateReception: new Date(),
+        lieuReception,
+        articlesRecus: typeReception === 'TOTAL' ? 'Réception totale' : 'Réception partielle',
+        typeReceptionFinale: typeReception,
+        observationsFinales: observations ?? null,
+        receptionnisteId: request.currentUser.id,
+      },
+      include: bcInclude,
+    });
+
+    return reply.send(updated);
   });
 
   // DELETE /api/bons-commande/:id — supprimer un BC (PATRON uniquement)

@@ -47,15 +47,28 @@ export default function Dashboard() {
     setFiltreStatut('');
   }
 
+  const STATUT_LABELS = {
+    TRANSMIS: 'Transmis',
+    RECU_BASE: 'Reçu base',
+    EN_LIVRAISON: 'En livraison',
+    LIVRE: 'Livré',
+  };
+
   function exportExcel() {
     const rows = filtered.map((bc) => ({
       'N° BC': bc.numero,
+      'N° DA': bc.numeroDA || '',
       'Fournisseur': bc.fournisseur,
       'Imputation': bc.imputation || '',
-      'Lieu de réception': bc.lieuReception || '',
-      'Montant (FCFA)': bc.montant ?? '',
-      'Statut': bc.statut === 'LIVRE' ? 'Livré' : 'En attente',
+      'Statut': STATUT_LABELS[bc.statut] || bc.statut,
+      'Lieu réception base': bc.lieuBase || '',
+      'Agent livreur': bc.agentLivreur || '',
+      'Lieu destination': bc.lieuDestination || '',
+      'Lieu réception finale': bc.lieuReception || '',
       'Date création': bc.createdAt ? new Date(bc.createdAt).toLocaleDateString('fr-FR') : '',
+      'Date réception base': bc.dateReceptionBase ? new Date(bc.dateReceptionBase).toLocaleDateString('fr-FR') : '',
+      'Date livraison': bc.dateLivraison ? new Date(bc.dateLivraison).toLocaleDateString('fr-FR') : '',
+      'Date réception finale': bc.dateReception ? new Date(bc.dateReception).toLocaleDateString('fr-FR') : '',
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();

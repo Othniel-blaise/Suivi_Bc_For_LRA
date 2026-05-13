@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import Badge from './ui/Badge.jsx';
-import ModalWorkflow from './ModalWorkflow.jsx';
 
 const ORDER = ['TRANSMIS', 'RECU_BASE', 'EN_LIVRAISON', 'LIVRE'];
 const STEP_COLORS = ['#94A3B8', '#3B82F6', '#7C3AED', '#22C55E'];
@@ -50,16 +48,9 @@ function Parcours({ bc }) {
   );
 }
 
-const ACTION = {
-  TRANSMIS:     { label: '🏠 Réceptionner à la base', color: '#3B82F6' },
-  RECU_BASE:    { label: '🚚 Mettre en livraison',    color: '#7C3AED' },
-  EN_LIVRAISON: { label: '✅ Confirmer livraison',    color: '#16A34A' },
-};
 
 export default function BCRow({ bc, index, total, onDelete }) {
   const isLast = index === total - 1;
-  const [showWorkflow, setShowWorkflow] = useState(false);
-  const action = ACTION[bc.statut];
 
   return (
     <div
@@ -112,21 +103,6 @@ export default function BCRow({ bc, index, total, onDelete }) {
         {/* Parcours */}
         <Parcours bc={bc} />
 
-        {/* Bouton action workflow */}
-        {action && (
-          <button
-            onClick={() => setShowWorkflow(true)}
-            style={{
-              background: action.color, color: 'white', border: 'none',
-              padding: '6px 12px', borderRadius: 8, fontSize: 11,
-              fontWeight: 700, cursor: 'pointer', flexShrink: 0,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {action.label}
-          </button>
-        )}
-
         {/* Bouton supprimer */}
         <button
           onClick={() => onDelete(bc)}
@@ -148,10 +124,6 @@ export default function BCRow({ bc, index, total, onDelete }) {
           ✕
         </button>
       </div>
-
-      {showWorkflow && (
-        <ModalWorkflow bc={bc} onClose={() => setShowWorkflow(false)} />
-      )}
 
       {/* Note de réception */}
       {bc.statut === 'LIVRE' && bc.articlesRecus && (

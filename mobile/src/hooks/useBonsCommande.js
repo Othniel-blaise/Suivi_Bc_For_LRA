@@ -21,12 +21,28 @@ export function useConfirmerReception() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, articlesRecus, lieuReception }) =>
-      api
-        .patch(`/bons-commande/${id}/reception`, { articlesRecus, lieuReception })
-        .then((r) => r.data),
+      api.patch(`/bons-commande/${id}/reception`, { articlesRecus, lieuReception }).then((r) => r.data),
     onSuccess: (_, { id }) => {
       qc.invalidateQueries({ queryKey: ['bons-commande'] });
       qc.invalidateQueries({ queryKey: ['bons-commande', id] });
     },
   });
 }
+
+function makeWorkflowMutation(path) {
+  return function useHook() {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn: ({ id, ...data }) =>
+        api.patch(`/bons-commande/${id}/${path}`, data).then((r) => r.data),
+      onSuccess: (_, { id }) => {
+        qc.invalidateQueries({ queryKey: ['bons-commande'] });
+        qc.invalidateQueries({ queryKey: ['bons-commande', id] });
+      },
+    });
+  };
+}
+
+export const useReceptionnerBase  = makeWorkflowMutation('reception-base');
+export const useMettreEnLivraison = makeWorkflowMutation('mise-en-livraison');
+export const useLivraisonFinale   = makeWorkflowMutation('livraison-finale');

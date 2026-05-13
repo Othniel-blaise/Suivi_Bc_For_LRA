@@ -1,7 +1,54 @@
 import { useState } from 'react';
 import Badge from './ui/Badge.jsx';
-import TimelineMini from './TimelineMini.jsx';
 import ModalWorkflow from './ModalWorkflow.jsx';
+
+const ORDER = ['TRANSMIS', 'RECU_BASE', 'EN_LIVRAISON', 'LIVRE'];
+const STEP_COLORS = ['#94A3B8', '#3B82F6', '#7C3AED', '#22C55E'];
+
+function Parcours({ bc }) {
+  const currentIdx = ORDER.indexOf(bc.statut);
+
+  const steps = [
+    { icon: '📤', label: 'Transmis',   sub: null },
+    { icon: '🏠', label: 'Base',       sub: bc.lieuBase || null },
+    { icon: '🚚', label: 'Transfert',  sub: bc.agentLivreur || null },
+    { icon: '📍', label: 'Chantier',   sub: bc.lieuReception || bc.lieuDestination || null },
+  ];
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+      {steps.map((step, i) => {
+        const done = i <= currentIdx;
+        const isCurrent = i === currentIdx;
+        const color = done ? STEP_COLORS[i] : '#334155';
+        return (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: 10,
+                fontWeight: isCurrent ? 800 : 600,
+                color,
+                opacity: done ? 1 : 0.35,
+                whiteSpace: 'nowrap',
+              }}>
+                {step.icon} {step.label}
+                {step.sub && (
+                  <span style={{ fontWeight: 700, marginLeft: 2 }}>({step.sub})</span>
+                )}
+              </div>
+            </div>
+            {i < steps.length - 1 && (
+              <span style={{
+                fontSize: 10, color: i < currentIdx ? STEP_COLORS[i] : '#334155',
+                opacity: i < currentIdx ? 1 : 0.3, fontWeight: 700,
+              }}>/</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 const ACTION = {
   TRANSMIS:     { label: '🏠 Réceptionner à la base', color: '#3B82F6' },
@@ -62,16 +109,8 @@ export default function BCRow({ bc, index, total, onDelete }) {
           </div>
         </div>
 
-        {/* Timeline */}
-        <div style={{ flexShrink: 0 }}>
-          <TimelineMini
-            dateTransmission={bc.dateTransmission}
-            dateReceptionBase={bc.dateReceptionBase}
-            dateLivraison={bc.dateLivraison}
-            dateReception={bc.dateReception}
-            statut={bc.statut}
-          />
-        </div>
+        {/* Parcours */}
+        <Parcours bc={bc} />
 
         {/* Bouton action workflow */}
         {action && (
@@ -88,7 +127,7 @@ export default function BCRow({ bc, index, total, onDelete }) {
           </button>
         )}
 
-        {/* Supprimer */}
+        {/* Bouton supprimer */}
         <button
           onClick={() => onDelete(bc)}
           title="Supprimer ce BC"

@@ -4,6 +4,9 @@ import {
   fetchBonsCommande,
   createBonCommande,
   deleteBonCommande,
+  receptionnerBase,
+  mettreEnLivraison,
+  confirmerLivraisonFinale,
 } from '../api/bons-commande.js';
 
 export function useBonsCommande() {
@@ -49,3 +52,24 @@ export function useDeleteBC() {
     },
   });
 }
+
+function makeWorkflowMutation(mutationFn, successMsg) {
+  return function useHook(onSuccess) {
+    const qc = useQueryClient();
+    return useMutation({
+      mutationFn,
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: ['bons-commande'] });
+        toast.success(successMsg);
+        onSuccess?.();
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.error || 'Erreur');
+      },
+    });
+  };
+}
+
+export const useReceptionnerBase     = makeWorkflowMutation(receptionnerBase,          '✅ Réception à la base enregistrée');
+export const useMettreEnLivraison    = makeWorkflowMutation(mettreEnLivraison,         '🚚 Mis en livraison');
+export const useLivraisonFinale      = makeWorkflowMutation(confirmerLivraisonFinale,  '✅ Livraison confirmée');

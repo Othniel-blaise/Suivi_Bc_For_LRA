@@ -13,6 +13,7 @@ import {
 } from '../../src/hooks/useBonsCommande.js';
 import Badge from '../../src/components/Badge.jsx';
 import Timeline from '../../src/components/Timeline.jsx';
+import LieuPicker from '../../src/components/LieuPicker.jsx';
 
 function fmtDate(d) {
   if (!d) return '—';
@@ -61,8 +62,7 @@ function FormulaireBase({ bcId, onDone }) {
       <Text style={styles.sectionTitle}>🏠 Réception à la base</Text>
 
       <Text style={styles.label}>Lieu de réception *</Text>
-      <TextInput style={styles.input} value={lieuBase} onChangeText={setLieuBase}
-        placeholder="Ex : Base Pk29" placeholderTextColor="#64748B" />
+      <LieuPicker value={lieuBase} onChange={setLieuBase} disabled={mutation.isPending} />
 
       <Text style={styles.label}>Type de réception *</Text>
       <TypePicker value={typeReception} onChange={setTypeReception} />
@@ -110,8 +110,7 @@ function FormulaireLivraison({ bcId, onDone }) {
         placeholder="Nom de l'agent" placeholderTextColor="#64748B" />
 
       <Text style={[styles.label, { marginTop: 12 }]}>Lieu de destination *</Text>
-      <TextInput style={styles.input} value={lieuDestination} onChangeText={setDest}
-        placeholder="Ex : Chantier Yamoussoukro" placeholderTextColor="#64748B" />
+      <LieuPicker value={lieuDestination} onChange={setDest} disabled={mutation.isPending} />
 
       <TouchableOpacity style={[styles.btn, { backgroundColor: '#7C3AED' }]}
         onPress={submit} disabled={mutation.isPending} activeOpacity={0.8}>
@@ -147,8 +146,7 @@ function FormulaireChantier({ bcId, onDone }) {
       <Text style={styles.sectionTitle}>📍 Réception au chantier</Text>
 
       <Text style={styles.label}>Lieu de réception *</Text>
-      <TextInput style={styles.input} value={lieuReception} onChangeText={setLieu}
-        placeholder="Ex : Chantier Yamoussoukro" placeholderTextColor="#64748B" />
+      <LieuPicker value={lieuReception} onChange={setLieu} disabled={mutation.isPending} />
 
       <Text style={styles.label}>Type de réception *</Text>
       <TypePicker value={typeReception} onChange={setType} />

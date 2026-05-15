@@ -8,7 +8,7 @@ function fmtDate(dateStr) {
 
 const STEPS = [
   { key: 'TRANSMIS',     label: 'Transmis',      circleColor: '#DBEAFE', textColor: '#1D4ED8' },
-  { key: 'RECU_BASE',    label: 'Reçu Base',     circleColor: '#DBEAFE', textColor: '#1D4ED8' },
+  { key: 'RECU_BASE',    label: 'Reçu (PK29) ',     circleColor: '#DBEAFE', textColor: '#1D4ED8' },
   { key: 'EN_LIVRAISON', label: 'Transfert',     circleColor: '#EDE9FE', textColor: '#6D28D9' },
   { key: 'LIVRE',        label: 'Reçu Chantier', circleColor: '#DCFCE7', textColor: '#15803D' },
 ];

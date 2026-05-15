@@ -8,7 +8,7 @@ function Parcours({ bc }) {
 
   const steps = [
     { icon: '📤', label: 'Transmis',      sub: null },
-    { icon: '🏠', label: 'Reçu Base',     sub: bc.lieuBase || null },
+    { icon: '🏠', label: ' Base (PK29) ',     sub: bc.lieuBase || null },
     { icon: '🚚', label: 'Transfert',     sub: bc.agentLivreur || null },
     { icon: '📍', label: 'Reçu Chantier', sub: bc.lieuReception || bc.lieuDestination || null },
   ];

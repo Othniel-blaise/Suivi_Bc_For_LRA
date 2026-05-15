@@ -8,9 +8,9 @@ function fmtDate(dateStr) {
 
 const STEPS = [
   { key: 'TRANSMIS',     label: 'Transmis',      circleColor: '#DBEAFE', textColor: '#1D4ED8' },
-  { key: 'RECU_BASE',    label: 'Reçu base',      circleColor: '#DBEAFE', textColor: '#1D4ED8' },
-  { key: 'EN_LIVRAISON', label: 'En livraison',   circleColor: '#EDE9FE', textColor: '#6D28D9' },
-  { key: 'LIVRE',        label: 'Livré',           circleColor: '#DCFCE7', textColor: '#15803D' },
+  { key: 'RECU_BASE',    label: 'Reçu Base',     circleColor: '#DBEAFE', textColor: '#1D4ED8' },
+  { key: 'EN_LIVRAISON', label: 'Transfert',     circleColor: '#EDE9FE', textColor: '#6D28D9' },
+  { key: 'LIVRE',        label: 'Reçu Chantier', circleColor: '#DCFCE7', textColor: '#15803D' },
 ];
 const ORDER = STEPS.map((s) => s.key);
 

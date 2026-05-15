@@ -7,10 +7,10 @@ function Parcours({ bc }) {
   const currentIdx = ORDER.indexOf(bc.statut);
 
   const steps = [
-    { icon: '📤', label: 'Transmis',   sub: null },
-    { icon: '🏠', label: 'Base',       sub: bc.lieuBase || null },
-    { icon: '🚚', label: 'Transfert',  sub: bc.agentLivreur || null },
-    { icon: '📍', label: 'Chantier',   sub: bc.lieuReception || bc.lieuDestination || null },
+    { icon: '📤', label: 'Transmis',      sub: null },
+    { icon: '🏠', label: 'Reçu Base',     sub: bc.lieuBase || null },
+    { icon: '🚚', label: 'Transfert',     sub: bc.agentLivreur || null },
+    { icon: '📍', label: 'Reçu Chantier', sub: bc.lieuReception || bc.lieuDestination || null },
   ];
 
   return (

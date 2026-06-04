@@ -17,7 +17,6 @@
     "runtimeVersion": "1.0.0",
     "plugins": [
       "expo-router",
-      "expo-updates",
       [
         "expo-image-picker",
         {

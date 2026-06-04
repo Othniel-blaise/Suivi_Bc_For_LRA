@@ -263,7 +263,7 @@ export default async function bonsCommandeRoutes(fastify) {
       where: { id: request.params.id },
       data: {
         statut: typeReception === 'TOTAL' ? 'LIVRE' : 'EN_LIVRAISON',
-        dateReception: typeReception === 'TOTAL' ? new Date() : undefined,
+        dateReception: new Date(),
         lieuReception,
         articlesRecus: typeReception === 'TOTAL' ? 'Réception totale' : 'Réception partielle',
         typeReceptionFinale: typeReception,

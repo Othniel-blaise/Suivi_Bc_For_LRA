@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-function fmtDate(dateStr) {
+function fmtDateTime(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const date = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return `${date} · ${time}`;
 }
 
 const STEPS = [
@@ -23,11 +25,33 @@ export default function Timeline({ dateTransmission, dateReceptionBase, dateLivr
       {STEPS.map((step, i) => {
         const done = i <= currentIdx;
         const isLast = i === STEPS.length - 1;
+        const isPartial = !done && !!dates[i];
+
+        let circleStyle = styles.circleInactive;
+        let circleTextStyle = styles.circleTextInactive;
+        if (done) {
+          circleStyle = { backgroundColor: step.circleColor };
+          circleTextStyle = { color: step.textColor };
+        } else if (isPartial) {
+          circleStyle = { backgroundColor: '#FEF3C7' };
+          circleTextStyle = { color: '#D97706' };
+        }
+
+        let dateLabel = 'En attente';
+        let dateLabelStyle = styles.stepDateInactive;
+        if (done && dates[i]) {
+          dateLabel = fmtDateTime(dates[i]);
+          dateLabelStyle = styles.stepDate;
+        } else if (isPartial) {
+          dateLabel = `⚠️ Partiel · ${fmtDateTime(dates[i])}`;
+          dateLabelStyle = styles.stepDatePartial;
+        }
+
         return (
           <View key={step.key} style={[styles.step, isLast && { marginBottom: 0 }]}>
             <View style={styles.stepLeft}>
-              <View style={[styles.circle, done ? { backgroundColor: step.circleColor } : styles.circleInactive]}>
-                <Text style={[styles.circleText, done ? { color: step.textColor } : styles.circleTextInactive]}>
+              <View style={[styles.circle, circleStyle]}>
+                <Text style={[styles.circleText, circleTextStyle]}>
                   {i + 1}
                 </Text>
               </View>
@@ -36,10 +60,10 @@ export default function Timeline({ dateTransmission, dateReceptionBase, dateLivr
               )}
             </View>
             <View style={styles.stepContent}>
-              <Text style={[styles.stepTitle, !done && styles.stepTitleInactive]}>{step.label}</Text>
-              <Text style={[styles.stepDate, !done && styles.stepDateInactive]}>
-                {done && dates[i] ? fmtDate(dates[i]) : !done ? 'En attente' : ''}
+              <Text style={[styles.stepTitle, !done && !isPartial && styles.stepTitleInactive, isPartial && styles.stepTitlePartial]}>
+                {step.label}
               </Text>
+              <Text style={dateLabelStyle}>{dateLabel}</Text>
             </View>
           </View>
         );
@@ -67,12 +91,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  circleActive: { backgroundColor: '#DBEAFE' },
-  circleActiveLivre: { backgroundColor: '#DCFCE7' },
   circleInactive: { backgroundColor: '#F1F5F9' },
   circleText: { fontSize: 13, fontWeight: '800' },
-  circleTextActive: { color: '#1D4ED8' },
-  circleTextLivre: { color: '#15803D' },
   circleTextInactive: { color: '#94A3B8' },
   line: {
     width: 2,
@@ -92,9 +112,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   stepTitleInactive: { color: '#94A3B8' },
+  stepTitlePartial: { color: '#D97706' },
   stepDate: {
     fontSize: 11,
     color: '#94A3B8',
   },
-  stepDateInactive: { color: '#CBD5E1' },
+  stepDateInactive: { color: '#CBD5E1', fontSize: 11 },
+  stepDatePartial: { fontSize: 11, color: '#D97706', fontWeight: '600' },
 });

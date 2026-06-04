@@ -51,7 +51,11 @@ function FormulaireBase({ bcId, onDone }) {
     if (!lieuBase.trim()) return Alert.alert('Champ requis', 'Renseignez le lieu de réception');
     try {
       await mutation.mutateAsync({ id: bcId, lieuBase: lieuBase.trim(), typeReception, observations: observations.trim() || undefined });
-      Alert.alert('✅ Enregistré', 'Réception à la base confirmée.', [{ text: 'OK', onPress: onDone }]);
+      if (typeReception === 'PARTIEL') {
+        Alert.alert('⚠️ Réception partielle', 'Enregistrée. Ce BC reste disponible pour compléter la réception.');
+      } else {
+        Alert.alert('✅ Enregistré', 'Réception à la base confirmée.', [{ text: 'OK', onPress: onDone }]);
+      }
     } catch (e) {
       Alert.alert('Erreur', e.response?.data?.error || 'Impossible d\'enregistrer');
     }
@@ -135,7 +139,11 @@ function FormulaireChantier({ bcId, onDone }) {
     if (!lieuReception.trim()) return Alert.alert('Champ requis', 'Renseignez le lieu de réception');
     try {
       await mutation.mutateAsync({ id: bcId, lieuReception: lieuReception.trim(), typeReception, observations: observations.trim() || undefined });
-      Alert.alert('✅ Livré !', 'Livraison confirmée au chantier.', [{ text: 'OK', onPress: onDone }]);
+      if (typeReception === 'PARTIEL') {
+        Alert.alert('⚠️ Livraison partielle', 'Enregistrée. Ce BC reste disponible pour compléter la livraison.');
+      } else {
+        Alert.alert('✅ Livré !', 'Livraison confirmée au chantier.', [{ text: 'OK', onPress: onDone }]);
+      }
     } catch (e) {
       Alert.alert('Erreur', e.response?.data?.error || 'Impossible d\'enregistrer');
     }

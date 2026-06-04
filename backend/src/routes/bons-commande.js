@@ -206,7 +206,7 @@ export default async function bonsCommandeRoutes(fastify) {
     const updated = await fastify.prisma.bonCommande.update({
       where: { id: request.params.id },
       data: {
-        statut: 'RECU_BASE',
+        statut: typeReception === 'TOTAL' ? 'RECU_BASE' : 'TRANSMIS',
         dateReceptionBase: new Date(),
         lieuBase,
         typeReceptionBase: typeReception,
@@ -262,8 +262,8 @@ export default async function bonsCommandeRoutes(fastify) {
     const updated = await fastify.prisma.bonCommande.update({
       where: { id: request.params.id },
       data: {
-        statut: 'LIVRE',
-        dateReception: new Date(),
+        statut: typeReception === 'TOTAL' ? 'LIVRE' : 'EN_LIVRAISON',
+        dateReception: typeReception === 'TOTAL' ? new Date() : undefined,
         lieuReception,
         articlesRecus: typeReception === 'TOTAL' ? 'Réception totale' : 'Réception partielle',
         typeReceptionFinale: typeReception,

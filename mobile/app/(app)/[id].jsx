@@ -52,7 +52,7 @@ function FormulaireBase({ bcId, onDone }) {
     try {
       await mutation.mutateAsync({ id: bcId, lieuBase: lieuBase.trim(), typeReception, observations: observations.trim() || undefined });
       if (typeReception === 'PARTIEL') {
-        Alert.alert('⚠️ Réception partielle', 'Enregistrée. Ce BC reste disponible pour compléter la réception.');
+        Alert.alert('⚠️ Réception partielle', 'Enregistrée. Ce BC reste disponible pour compléter la réception.', [{ text: 'OK', onPress: onDone }]);
       } else {
         Alert.alert('✅ Enregistré', 'Réception à la base confirmée.', [{ text: 'OK', onPress: onDone }]);
       }
@@ -140,7 +140,7 @@ function FormulaireChantier({ bcId, onDone }) {
     try {
       await mutation.mutateAsync({ id: bcId, lieuReception: lieuReception.trim(), typeReception, observations: observations.trim() || undefined });
       if (typeReception === 'PARTIEL') {
-        Alert.alert('⚠️ Livraison partielle', 'Enregistrée. Ce BC reste disponible pour compléter la livraison.');
+        Alert.alert('⚠️ Livraison partielle', 'Enregistrée. Ce BC reste disponible pour compléter la livraison.', [{ text: 'OK', onPress: onDone }]);
       } else {
         Alert.alert('✅ Livré !', 'Livraison confirmée au chantier.', [{ text: 'OK', onPress: onDone }]);
       }

@@ -103,12 +103,10 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Indication démo */}
+          {/* Version */}
           <View style={styles.demo}>
-            <Text style={styles.demoText}>Démo : </Text>
-            <Text style={styles.demoCreds}>aminata / 1234</Text>
-            <Text style={styles.demoText}> ou </Text>
-            <Text style={styles.demoCreds}>kofi / 1234</Text>
+            <Text style={styles.demoText}>Blaise_Système · </Text>
+            <Text style={styles.demoCreds}>Version 1.0.0</Text>
           </View>
         </View>
       </ScrollView>

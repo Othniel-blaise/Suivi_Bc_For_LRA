@@ -4,10 +4,10 @@ import Modal from './ui/Modal.jsx';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../api/client.js';
 
-const COL_NUMERO     = ['n° du bc', 'n°bc', 'nbc', 'numero', 'numéro', 'n° bc', 'bc', 'n°'];
-const COL_FOURNISSEUR = ['fournisseur'];
-const COL_IMPUTATION  = ['imputation', 'objet', 'désignation', 'designation', 'libellé', 'libelle'];
-const COL_NUMERO_DA   = ['n° da', 'n°da', 'numero da', 'numéro da', 'nda', 'da', 'n° d\'achat', 'demande achat'];
+const COL_NUMERO      = ['numero', 'numéro', 'n° du bc', 'n°bc', 'nbc', 'n° bc', 'bc', 'n°'];
+const COL_FOURNISSEUR = ['nom du fournisseur', 'fournisseur'];
+const COL_IMPUTATION  = ['imputation par défaut', 'imputation par defaut', 'imputation', 'objet', 'désignation', 'designation', 'libellé', 'libelle'];
+const COL_NUMERO_DA   = ['demandes d\'achat', 'demande d\'achat', 'n° da', 'n°da', 'numero da', 'numéro da', 'nda', 'da'];
 
 function normalise(str) {
   return String(str ?? '').toLowerCase().trim()

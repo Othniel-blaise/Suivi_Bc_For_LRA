@@ -145,11 +145,11 @@ function ImputationSelect({ value, onChange, disabled }) {
 }
 
 export default function ModalNouveauBC({ open, onClose }) {
-  const [form, setForm] = useState({ numero: '', fournisseur: '', imputation: '' });
+  const [form, setForm] = useState({ numero: '', fournisseur: '', imputation: '', numeroDA: '' });
   const [numeroError, setNumeroError] = useState('');
 
   const createBC = useCreateBC(() => {
-    setForm({ numero: '', fournisseur: '', imputation: '' });
+    setForm({ numero: '', fournisseur: '', imputation: '', numeroDA: '' });
     setNumeroError('');
     onClose();
   }, (err) => {
@@ -165,9 +165,10 @@ export default function ModalNouveauBC({ open, onClose }) {
     e.preventDefault();
     if (!canSubmit || createBC.isPending) return;
     createBC.mutate({
-      numero: form.numero.trim(),
+      numero:      form.numero.trim(),
       fournisseur: form.fournisseur.trim(),
-      imputation: form.imputation,
+      imputation:  form.imputation,
+      numeroDA:    form.numeroDA.trim() || undefined,
     });
   }
 
@@ -243,6 +244,21 @@ export default function ModalNouveauBC({ open, onClose }) {
           <ImputationSelect
             value={form.imputation}
             onChange={(val) => setForm((f) => ({ ...f, imputation: val }))}
+            disabled={createBC.isPending}
+          />
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text3)', marginBottom: 5 }}>
+            N° DA <span style={{ fontWeight: 400, color: 'var(--text4)' }}>(optionnel)</span>
+          </label>
+          <input
+            style={inputStyle}
+            placeholder="DA-2026-00123"
+            value={form.numeroDA}
+            onChange={(e) => setForm((f) => ({ ...f, numeroDA: e.target.value }))}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--blue)')}
+            onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
             disabled={createBC.isPending}
           />
         </div>

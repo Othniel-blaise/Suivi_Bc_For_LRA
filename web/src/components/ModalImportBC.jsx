@@ -4,9 +4,10 @@ import Modal from './ui/Modal.jsx';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../api/client.js';
 
-const COL_NUMERO = ['n° du bc', 'n°bc', 'nbc', 'numero', 'numéro', 'n° bc', 'bc', 'n°'];
+const COL_NUMERO     = ['n° du bc', 'n°bc', 'nbc', 'numero', 'numéro', 'n° bc', 'bc', 'n°'];
 const COL_FOURNISSEUR = ['fournisseur'];
-const COL_IMPUTATION = ['imputation', 'objet', 'désignation', 'designation', 'libellé', 'libelle'];
+const COL_IMPUTATION  = ['imputation', 'objet', 'désignation', 'designation', 'libellé', 'libelle'];
+const COL_NUMERO_DA   = ['n° da', 'n°da', 'numero da', 'numéro da', 'nda', 'da', 'n° d\'achat', 'demande achat'];
 
 function normalise(str) {
   return String(str ?? '').toLowerCase().trim()
@@ -26,9 +27,10 @@ function parseRows(workbook) {
   if (rows.length === 0) return { rows: [], mapping: null, error: 'Fichier vide' };
 
   const headers = Object.keys(rows[0]);
-  const colNumero = detecterColonne(headers, COL_NUMERO);
+  const colNumero      = detecterColonne(headers, COL_NUMERO);
   const colFournisseur = detecterColonne(headers, COL_FOURNISSEUR);
-  const colImputation = detecterColonne(headers, COL_IMPUTATION);
+  const colImputation  = detecterColonne(headers, COL_IMPUTATION);
+  const colNumeroDA    = detecterColonne(headers, COL_NUMERO_DA);
 
   if (!colNumero || !colFournisseur) {
     return {
@@ -40,13 +42,14 @@ function parseRows(workbook) {
 
   const parsed = rows
     .map((r) => ({
-      numero: String(r[colNumero] ?? '').trim(),
+      numero:      String(r[colNumero]      ?? '').trim(),
       fournisseur: String(r[colFournisseur] ?? '').trim(),
-      imputation: colImputation ? String(r[colImputation] ?? '').trim() : '—',
+      imputation:  colImputation ? String(r[colImputation] ?? '').trim() : '—',
+      numeroDA:    colNumeroDA   ? String(r[colNumeroDA]   ?? '').trim() || undefined : undefined,
     }))
     .filter((r) => r.numero && r.fournisseur);
 
-  return { rows: parsed, mapping: { colNumero, colFournisseur, colImputation }, error: null };
+  return { rows: parsed, mapping: { colNumero, colFournisseur, colImputation, colNumeroDA }, error: null };
 }
 
 export default function ModalImportBC({ open, onClose }) {
@@ -177,9 +180,10 @@ export default function ModalImportBC({ open, onClose }) {
             color: 'var(--text4)', lineHeight: 1.8,
           }}>
             <strong style={{ color: 'var(--text3)' }}>Format attendu :</strong><br />
-            Colonne 1 : <code>N° du BC</code> &nbsp;|&nbsp;
-            Colonne 2 : <code>Fournisseur</code> &nbsp;|&nbsp;
-            Colonne 3 : <code>Imputation</code> (optionnel)
+            Col. 1 : <code>N° du BC</code> &nbsp;|&nbsp;
+            Col. 2 : <code>Fournisseur</code> &nbsp;|&nbsp;
+            Col. 3 : <code>Imputation</code> <em>(optionnel)</em> &nbsp;|&nbsp;
+            Col. 4 : <code>N° DA</code> <em>(optionnel)</em>
           </div>
         </div>
       )}
@@ -206,7 +210,7 @@ export default function ModalImportBC({ open, onClose }) {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead style={{ position: 'sticky', top: 0, background: 'var(--bg)' }}>
                 <tr>
-                  {['#', 'Numéro', 'Nom du fournisseur', 'Imputation par défaut'].map((h) => (
+                  {['#', 'N° BC', 'Fournisseur', 'Imputation', 'N° DA'].map((h) => (
                     <th key={h} style={{
                       padding: '8px 12px', textAlign: 'left', fontSize: 11,
                       fontWeight: 700, color: 'var(--text4)',
@@ -222,11 +226,14 @@ export default function ModalImportBC({ open, onClose }) {
                     <td style={{ padding: '7px 12px', fontFamily: 'var(--mono)', fontWeight: 600 }}>{r.numero}</td>
                     <td style={{ padding: '7px 12px' }}>{r.fournisseur}</td>
                     <td style={{ padding: '7px 12px', color: 'var(--text3)' }}>{r.imputation || '—'}</td>
+                    <td style={{ padding: '7px 12px', color: r.numeroDA ? 'var(--blue-d)' : 'var(--text5)', fontWeight: r.numeroDA ? 700 : 400 }}>
+                      {r.numeroDA || '—'}
+                    </td>
                   </tr>
                 ))}
                 {rows.length > 50 && (
                   <tr>
-                    <td colSpan={4} style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text4)', fontSize: 11 }}>
+                    <td colSpan={5} style={{ padding: '8px 12px', textAlign: 'center', color: 'var(--text4)', fontSize: 11 }}>
                       ... et {rows.length - 50} autres lignes
                     </td>
                   </tr>

@@ -2,9 +2,10 @@ import { z } from 'zod';
 import { authenticate, requireRole } from '../middleware/auth.js';
 
 const createBCSchema = z.object({
-  numero: z.string().min(1, 'Numéro de BC requis'),
+  numero:      z.string().min(1, 'Numéro de BC requis'),
   fournisseur: z.string().min(1, 'Fournisseur requis'),
-  imputation: z.string().optional().default('—'),
+  imputation:  z.string().optional().default('—'),
+  numeroDA:    z.string().optional(),
 });
 
 const receptionSchema = z.object({
@@ -69,7 +70,7 @@ export default async function bonsCommandeRoutes(fastify) {
       return reply.status(400).send({ error: result.error.errors[0].message });
     }
 
-    const { numero, fournisseur, imputation } = result.data;
+    const { numero, fournisseur, imputation, numeroDA } = result.data;
 
     const existing = await fastify.prisma.bonCommande.findUnique({ where: { numero } });
     if (existing) {
@@ -77,7 +78,7 @@ export default async function bonsCommandeRoutes(fastify) {
     }
 
     const bc = await fastify.prisma.bonCommande.create({
-      data: { numero, fournisseur, imputation, createdById: request.currentUser.id },
+      data: { numero, fournisseur, imputation, numeroDA: numeroDA || null, createdById: request.currentUser.id },
       include: {
         createdBy: { select: { id: true, nom: true, username: true } },
         receptionniste: { select: { id: true, nom: true, username: true } },
@@ -144,14 +145,14 @@ export default async function bonsCommandeRoutes(fastify) {
         resultats.push({ numero: item.numero || '?', statut: 'erreur', message: result.error.errors[0].message });
         continue;
       }
-      const { numero, fournisseur, imputation } = result.data;
+      const { numero, fournisseur, imputation, numeroDA } = result.data;
       const existing = await fastify.prisma.bonCommande.findUnique({ where: { numero } });
       if (existing) {
         resultats.push({ numero, statut: 'doublon', message: 'Numéro déjà existant' });
         continue;
       }
       await fastify.prisma.bonCommande.create({
-        data: { numero, fournisseur, imputation, createdById: request.currentUser.id },
+        data: { numero, fournisseur, imputation, numeroDA: numeroDA || null, createdById: request.currentUser.id },
       });
       resultats.push({ numero, statut: 'ok', message: 'Créé' });
     }

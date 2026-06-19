@@ -108,6 +108,11 @@ export default function BCRow({ bc, index, total, onDelete }) {
           <div style={{ fontSize: 11, color: 'var(--text4)' }}>
             {bc.imputation}
           </div>
+          {bc.numeroDA && (
+            <div style={{ fontSize: 11, color: 'var(--blue-d)', fontWeight: 700, marginTop: 2 }}>
+              DA : {bc.numeroDA}
+            </div>
+          )}
         </div>
 
         {/* Parcours */}
